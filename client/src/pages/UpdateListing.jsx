@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function CreateListing() {
+export default function UpdateListing() {
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
     imageUrls: [],
@@ -26,8 +26,23 @@ export default function CreateListing() {
   const [loading, setLoading] = useState(false);
   const {currentUser} = useSelector(state => state.user);
   const navigate = useNavigate();
+  const params = useParams();
 
-  console.log(currentUser);
+  useEffect(() => {
+    const fetchListing = async () => {
+        const listingId = params.listingId;
+        const res = await fetch(`/api/listing/get/${listingId}`);
+
+        const data = await res.json();
+        if(data.success === false){
+            console.log(data.message);
+            return;
+        }
+
+        setFormData(data);
+    }
+    fetchListing();
+  }, []);
 
   const storeImage = async (file) => {
     const cloudinaryUrl = "https://api.cloudinary.com/v1_1/diievnipd/image/upload";
@@ -79,7 +94,6 @@ export default function CreateListing() {
         setUploading(false);
     }
   };
-//   console.log(formData.imageUrls.length );
 
   const handleRemoveImage = (index) => {
     setFormData({
@@ -127,7 +141,7 @@ export default function CreateListing() {
 
         setLoading(true);
         setError(false);
-        const res = await fetch("/api/listing/create", {
+        const res = await fetch(`/api/listing/update/${params.listingId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -155,7 +169,7 @@ export default function CreateListing() {
 
   return (
     <main className="p-3 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-semibold text-center my-7">Create a Listing</h1>
+      <h1 className="text-3xl font-semibold text-center my-7">Update a Listing</h1>
 
       <form onSubmit={handleSubmit} 
       className="flex flex-col sm:flex-row gap-4"
@@ -364,7 +378,7 @@ export default function CreateListing() {
           <button 
           disabled={loading || uploading}
           className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-            {loading ? "Creating..." : "Create Listing"}
+            {loading ? "Updating..." : "Update Listing"}
           </button>
 
           {
