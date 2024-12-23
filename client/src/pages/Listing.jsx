@@ -12,6 +12,8 @@ import {
     FaChair,
     FaShare
 } from "react-icons/fa" 
+import { useSelector } from 'react-redux';
+import Contact from '../Components/Contact';
 
 export default function Listing() {
 
@@ -21,6 +23,8 @@ export default function Listing() {
     const [error, setError] = useState(false);
     const params = useParams();
     const [copied, setCopied] = useState(false);
+    const {currentUser} = useSelector(state => state.user);
+    const [contact, setContact] = useState(false);
 
     useEffect(() => {
         const fetchListing = async () => {
@@ -165,14 +169,31 @@ export default function Listing() {
                             </li>
   
                         </ul>
+
+                        {
+                            currentUser && listing.userRef !== currentUser._id
+                            && !contact
+
+                            &&
+                            
+                            (<button 
+                            onClick = {() => setContact(true)}
+                            className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'>
+                            Contact LandLord
+                        </button>)
+                        }
+
+                        {contact &&
+                         <Contact listing={listing}/>
+                        }
+                        
+                        
                     </div>
 
 
                 </div>
             )
             }
-
-
         </main>
     )
 }
