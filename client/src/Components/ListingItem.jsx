@@ -43,10 +43,7 @@ export default function ListingItem({listing}) {
         </div>
 
     </Link>
-    </div>
-
-    
-   
+    </div>  
   )
 }
 
